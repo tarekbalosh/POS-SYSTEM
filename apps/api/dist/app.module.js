@@ -14,14 +14,7 @@ const bullmq_1 = require("@nestjs/bullmq");
 const prisma_service_1 = require("./prisma/prisma.service");
 const redis_service_1 = require("./common/redis/redis.service");
 const tenant_middleware_1 = require("./common/middleware/tenant.middleware");
-const auth_module_1 = require("./modules/auth/auth.module");
-const menu_module_1 = require("./modules/menu/menu.module");
-const orders_module_1 = require("./modules/orders/orders.module");
-const payments_module_1 = require("./modules/payments/payments.module");
-const inventory_module_1 = require("./modules/inventory/inventory.module");
-const tenants_module_1 = require("./modules/tenants/tenants.module");
 const kitchen_gateway_1 = require("./modules/kitchen/kitchen.gateway");
-const reports_module_1 = require("./modules/reports/reports.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -52,13 +45,6 @@ exports.AppModule = AppModule = __decorate([
                 }),
                 inject: [config_1.ConfigService],
             }),
-            auth_module_1.AuthModule,
-            menu_module_1.MenuModule,
-            orders_module_1.OrdersModule,
-            payments_module_1.PaymentsModule,
-            inventory_module_1.InventoryModule,
-            tenants_module_1.TenantsModule,
-            reports_module_1.ReportsModule,
         ],
         providers: [prisma_service_1.PrismaService, redis_service_1.RedisService, kitchen_gateway_1.KitchenGateway],
     })

@@ -7,14 +7,16 @@ import { RedisService } from './common/redis/redis.service';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
 // Module Imports
+/*
 import { AuthModule } from './modules/auth/auth.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { TenantsModule } from './modules/tenants/tenants.module';
-import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
 import { ReportsModule } from './modules/reports/reports.module';
+*/
+import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { ReportsModule } from './modules/reports/reports.module';
       }),
       inject: [ConfigService],
     }),
+    /*
     AuthModule,
     MenuModule,
     OrdersModule,
@@ -44,6 +47,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     InventoryModule,
     TenantsModule,
     ReportsModule,
+    */
   ],
   providers: [PrismaService, RedisService, KitchenGateway],
 })

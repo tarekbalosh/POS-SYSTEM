@@ -23,7 +23,10 @@ let RedisService = class RedisService {
         this.configService = configService;
     }
     onModuleInit() {
-        this.client = new ioredis_1.default(this.configService.get('REDIS_URL'));
+        const redisUrl = this.configService.get('REDIS_URL');
+        if (redisUrl) {
+            this.client = new ioredis_1.default(redisUrl);
+        }
     }
     onModuleDestroy() {
         this.client.disconnect();
