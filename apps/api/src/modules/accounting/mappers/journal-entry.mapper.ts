@@ -10,7 +10,7 @@ export interface POSEvent {
 @Injectable()
 export class JournalEntryMapper {
   async buildEntry(event: POSEvent, mappings: Record<string, any>) {
-    const lines = [];
+    const lines: any[] = [];
     const date = new Date();
 
     switch (event.type) {

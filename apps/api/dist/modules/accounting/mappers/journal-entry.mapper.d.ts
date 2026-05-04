@@ -1,4 +1,3 @@
-import { Decimal } from 'decimal.js';
 export interface POSEvent {
     id: string;
     type: 'ORDER_PAID' | 'PAYMENT_VOIDED' | 'STOCK_PURCHASED' | 'STOCK_WASTED';
@@ -11,16 +10,6 @@ export declare class JournalEntryMapper {
         description: string;
         reference: string;
         date: Date;
-        lines: ({
-            accountCode: any;
-            accountName: any;
-            debit: Decimal;
-            credit: null;
-        } | {
-            accountCode: any;
-            accountName: any;
-            debit: null;
-            credit: Decimal;
-        })[];
+        lines: any[];
     }>;
 }
