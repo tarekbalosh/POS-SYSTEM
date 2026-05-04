@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "build": "turbo build",
+    "postinstall": "prisma generate --schema=packages/database/schema.prisma",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
