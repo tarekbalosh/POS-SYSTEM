@@ -1,0 +1,21 @@
+{
+  "name": "pos-saas",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.4.1",
+    "prettier": "^3.0.0",
+    "prisma": "^6.4.1",
+    "turbo": "latest"
+  },
+  "packageManager": "npm@10.2.4"
+}

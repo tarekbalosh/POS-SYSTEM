@@ -1,0 +1,332 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// PUBLIC SCHEMA MODELS
+// ==========================================
+
+model Tenant {
+  id        String       @id @default(cuid())
+  name      String
+  subdomain String       @unique
+  plan      Plan         @default(STARTER)
+  status    TenantStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+}
+
+enum Plan {
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+model TenantUser {
+  id           String   @id @default(cuid())
+  tenantId     String
+  email        String
+  passwordHash String
+  role         UserRole
+  lastLogin    DateTime?
+  createdAt    DateTime @default(now())
+
+  @@unique([tenantId, email])
+  @@index([email]) // Optimized for authentication lookups
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  CASHIER
+  KITCHEN
+}
+
+// ==========================================
+// TENANT SCHEMA MODELS (tenant_{id})
+// ==========================================
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  color     String?
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+  items     MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([isActive, sortOrder]) // Optimized for menu rendering
+}
+
+model MenuItem {
+  id             String           @id @default(cuid())
+  categoryId     String
+  category       Category         @relation(fields: [categoryId], references: [id])
+  name           String
+  sku            String?          @unique
+  price          Decimal          @db.Decimal(10, 2)
+  cost           Decimal?         @db.Decimal(10, 2)
+  imageUrl       String?
+  preparationSec Int              @default(0)
+  isAvailable    Boolean          @default(true)
+  modifiers      MenuModifier[]
+  ingredients    ItemIngredient[]
+  orderItems     OrderItem[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([categoryId]) // Optimized for category filtering
+}
+
+model MenuModifier {
+  id         String   @id @default(cuid())
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  name       String
+  priceDelta Decimal  @db.Decimal(8, 2)
+  isRequired Boolean  @default(false)
+
+  @@index([menuItemId])
+}
+
+model Table {
+  id       String      @id @default(cuid())
+  label    String
+  capacity Int
+  zone     String?
+  status   TableStatus @default(AVAILABLE)
+  orders   Order[]
+
+  @@index([status, zone]) // Optimized for floor management
+}
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  CLEANING
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  tableId     String?
+  table       Table?      @relation(fields: [tableId], references: [id])
+  type        OrderType
+  status      OrderStatus @default(PENDING)
+  subtotal    Decimal     @db.Decimal(10, 2)
+  discount    Decimal     @default(0) @db.Decimal(10, 2)
+  tax         Decimal     @db.Decimal(10, 2)
+  total       Decimal     @db.Decimal(10, 2)
+  items       OrderItem[]
+  payments    Payment[]
+  openedAt    DateTime    @default(now())
+  closedAt    DateTime?
+  createdById String
+
+  @@index([status, openedAt]) // Critical for active order management
+  @@index([tableId])          // Quick lookup for active tables
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+  DELIVERY
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  SERVED
+  PAID
+  CANCELLED
+}
+
+model OrderItem {
+  id         String          @id @default(cuid())
+  orderId    String
+  order      Order           @relation(fields: [orderId], references: [id])
+  menuItemId String
+  menuItem   MenuItem        @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  unitPrice  Decimal         @db.Decimal(10, 2)
+  modifiers  Json?           // Storing modifier snapshots for historical accuracy
+  notes      String?
+  status     OrderItemStatus @default(PENDING)
+
+  @@index([orderId])          // Joins are heavy, order items are many
+  @@index([status])           // Important for Kitchen Display System (KDS)
+}
+
+enum OrderItemStatus {
+  PENDING
+  PREPARING
+  READY
+  SERVED
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     Order         @relation(fields: [orderId], references: [id])
+  method    PaymentMethod
+  amount    Decimal       @db.Decimal(10, 2)
+  reference String?
+  paidAt    DateTime      @default(now())
+  voidedAt  DateTime?
+
+  @@index([orderId])
+  @@index([paidAt])          // Time-series revenue reporting
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  EWALLET
+  SPLIT
+}
+
+model Ingredient {
+  id           String          @id @default(cuid())
+  name         String
+  unit         IngredientUnit
+  currentStock Decimal         @db.Decimal(10, 3)
+  minThreshold Decimal         @db.Decimal(10, 3)
+  costPerUnit  Decimal         @db.Decimal(10, 4)
+  movements    StockMovement[]
+  items        ItemIngredient[]
+
+  @@index([currentStock, minThreshold]) // Low stock alerts
+}
+
+enum IngredientUnit {
+  G
+  KG
+  ML
+  L
+  PIECE
+}
+
+model ItemIngredient {
+  menuItemId   String
+  ingredientId String
+  quantityUsed Decimal    @db.Decimal(10, 3)
+  menuItem     MenuItem   @relation(fields: [menuItemId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([menuItemId, ingredientId])
+}
+
+model StockMovement {
+  id           String            @id @default(cuid())
+  ingredientId String
+  ingredient   Ingredient        @relation(fields: [ingredientId], references: [id])
+  type         StockMovementType
+  quantity     Decimal           @db.Decimal(10, 3)
+  referenceId  String?
+  note         String?
+  createdAt    DateTime          @default(now())
+
+  @@index([ingredientId, createdAt]) // Inventory audit trails
+}
+
+enum StockMovementType {
+  PURCHASE
+  SALE_DEDUCTION
+  MANUAL
+  WASTE
+  RETURN
+}
+
+model SyncLog {
+  id           String     @id @default(cuid())
+  entity       String
+  entityId     String
+  action       SyncAction
+  payloadJson  Json
+  clientId     String
+  syncedAt     DateTime?
+  conflictNote String?
+  createdAt    DateTime   @default(now())
+
+  @@index([clientId, syncedAt]) // Offline POS background sync optimization
+  @@index([entity, entityId])
+}
+
+enum SyncAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// ==========================================
+// ACCOUNTING MODELS
+// ==========================================
+
+model JournalEntry {
+  id          String         @id @default(cuid())
+  eventId     String         @unique
+  eventType   String
+  description String
+  reference   String
+  date        DateTime
+  lines       JournalLine[]
+  status      EntryStatus    @default(SENT)
+  createdAt   DateTime       @default(now())
+}
+
+model JournalLine {
+  id            String       @id @default(cuid())
+  entryId       String
+  entry         JournalEntry @relation(fields: [entryId], references: [id])
+  accountCode   String
+  accountName   String
+  debit         Decimal?     @db.Decimal(10, 2)
+  credit        Decimal?     @db.Decimal(10, 2)
+}
+
+enum EntryStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model AccountMapping {
+  id            String   @id @default(cuid())
+  mappingKey    String   // e.g. "CASH_PAYMENT_DEBIT"
+  accountCode   String   // e.g. "1001"
+  accountName   String   // e.g. "Cash"
+  
+  @@unique([mappingKey])
+}
+
+model WebhookConfig {
+  id          String   @id @default(cuid())
+  provider    WebhookProvider
+  endpointUrl String
+  secret      String   // HMAC signing secret
+  isActive    Boolean  @default(true)
+}
+
+enum WebhookProvider { 
+  QUICKBOOKS 
+  XERO 
+  GENERIC 
+}
+
+model ProcessedEvent {
+  eventId        String   @id
+  journalEntryId String
+  processedAt    DateTime @default(now())
+}

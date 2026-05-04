@@ -1,0 +1,57 @@
+[
+  {
+    "id": "CASH_SALE_TAX",
+    "name": "Cash Sale with Tax",
+    "triggerEvent": "ORDER_PAID",
+    "priority": 10,
+    "isActive": true,
+    "conditions": [
+      { "field": "payment.method", "op": "eq", "value": "CASH" },
+      { "field": "order.tax", "op": "gt", "value": 0 }
+    ],
+    "entryLines": [
+      { "account_key": "CASH_PAYMENT", "side": "DEBIT", "formula": "payment.amount" },
+      { "account_key": "FOOD_REVENUE", "side": "CREDIT", "formula": "order.subtotal - order.discount" },
+      { "account_key": "TAX_PAYABLE", "side": "CREDIT", "formula": "order.tax" }
+    ]
+  },
+  {
+    "id": "CARD_SALE_TAX",
+    "name": "Card Sale with Tax",
+    "triggerEvent": "ORDER_PAID",
+    "priority": 10,
+    "isActive": true,
+    "conditions": [
+      { "field": "payment.method", "op": "eq", "value": "CARD" }
+    ],
+    "entryLines": [
+      { "account_key": "CARD_RECEIVABLE", "side": "DEBIT", "formula": "payment.amount" },
+      { "account_key": "FOOD_REVENUE", "side": "CREDIT", "formula": "order.subtotal - order.discount" },
+      { "account_key": "TAX_PAYABLE", "side": "CREDIT", "formula": "order.tax" }
+    ]
+  },
+  {
+    "id": "COGS_SALE",
+    "name": "COGS Recognition",
+    "triggerEvent": "ORDER_PAID",
+    "priority": 5,
+    "isActive": true,
+    "conditions": [],
+    "entryLines": [
+      { "account_key": "COGS", "side": "DEBIT", "formula": "order.cogs" },
+      { "account_key": "INVENTORY_ASSET", "side": "CREDIT", "formula": "order.cogs" }
+    ]
+  },
+  {
+    "id": "WASTE_ENTRY",
+    "name": "Stock Waste",
+    "triggerEvent": "STOCK_WASTED",
+    "priority": 10,
+    "isActive": true,
+    "conditions": [],
+    "entryLines": [
+      { "account_key": "WASTE_EXPENSE", "side": "DEBIT", "formula": "waste.value" },
+      { "account_key": "INVENTORY_ASSET", "side": "CREDIT", "formula": "waste.value" }
+    ]
+  }
+]
