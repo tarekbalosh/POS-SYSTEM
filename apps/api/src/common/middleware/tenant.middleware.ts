@@ -19,7 +19,7 @@ export class TenantMiddleware implements NestMiddleware {
     const schema = `tenant_${tenantId.replace(/-/g, '_')}`;
 
     // Run the rest of the request in the tenant context
-    PrismaService.getAls().run({ schema }, () => {
+    PrismaService.als.run({ schema, tenantId }, () => {
       next();
     });
   }

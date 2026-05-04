@@ -23,7 +23,7 @@ let TenantMiddleware = class TenantMiddleware {
             return next();
         }
         const schema = `tenant_${tenantId.replace(/-/g, '_')}`;
-        prisma_service_1.PrismaService.getAls().run({ schema }, () => {
+        prisma_service_1.PrismaService.als.run({ schema, tenantId }, () => {
             next();
         });
     }
