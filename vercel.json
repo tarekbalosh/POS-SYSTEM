@@ -12,6 +12,10 @@
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/apps/api/api" },
+    { "source": "/manifest.json", "destination": "/apps/web/manifest.json" },
+    { "source": "/icon-:path*", "destination": "/apps/web/icon-:path*" },
+    { "source": "/images/:path*", "destination": "/apps/web/images/:path*" },
+    { "source": "/sw-:path*", "destination": "/apps/web/sw-:path*" },
     { "source": "/(.*)", "destination": "/apps/web/$1" }
   ]
 }

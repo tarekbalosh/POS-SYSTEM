@@ -10,7 +10,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "ProPOS | Premium Restaurant SaaS",
   description: "Production-ready, multi-tenant POS system for modern restaurants.",
-  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
