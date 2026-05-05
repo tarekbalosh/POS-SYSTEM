@@ -20,10 +20,8 @@
   },
   "overrides": {
     "react": "19.0.0",
-    "react-dom": "19.0.0"
-  },
-  "optionalDependencies": {
-    "lightningcss-linux-x64-gnu": "^1.28.2"
+    "react-dom": "19.0.0",
+    "lightningcss": "1.28.2"
   },
   "packageManager": "npm@10.2.4"
 }
