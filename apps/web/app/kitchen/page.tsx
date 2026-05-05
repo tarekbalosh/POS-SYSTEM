@@ -59,7 +59,7 @@ export default function KitchenPage() {
                             {item.name}
                           </span>
                         </div>
-                        {item.notes && <p className="text-xs text-rose-400 mt-1 italic ml-10">"{item.notes}"</p>}
+                        {item.notes && <p className="text-xs text-rose-400 mt-1 italic ml-10">&quot;{item.notes}&quot;</p>}
                       </div>
                       {item.status !== 'READY' && (
                         <button 
