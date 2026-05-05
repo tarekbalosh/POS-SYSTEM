@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "postinstall": "npx prisma generate --schema=packages/database/schema.prisma",
+    "postinstall": "npx prisma@6.4.1 generate --schema=packages/database/schema.prisma",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "test:e2e": "echo \"E2E tests skipped\" && exit 0",
