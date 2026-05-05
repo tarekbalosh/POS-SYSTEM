@@ -7,16 +7,12 @@ import { PrismaService } from './prisma/prisma.service';
 import { RedisService } from './common/redis/redis.service';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 
-// Module Imports
-/*
 import { AuthModule } from './modules/auth/auth.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { OrdersModule } from './modules/orders/orders.module';
-import { PaymentsModule } from './modules/payments/payments.module';
-import { InventoryModule } from './modules/inventory/inventory.module';
 import { TenantsModule } from './modules/tenants/tenants.module';
-import { ReportsModule } from './modules/reports/reports.module';
-*/
+import { SyncModule } from './modules/sync/sync.module';
+import { AccountingModule } from './modules/accounting/accounting.module';
 import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
 
 @Module({
@@ -40,15 +36,12 @@ import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
       }),
       inject: [ConfigService],
     }),
-    /*
     AuthModule,
     MenuModule,
     OrdersModule,
-    PaymentsModule,
-    InventoryModule,
     TenantsModule,
-    ReportsModule,
-    */
+    SyncModule,
+    AccountingModule,
   ],
   providers: [PrismaService, RedisService, KitchenGateway],
 })

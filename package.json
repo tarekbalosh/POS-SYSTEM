@@ -18,5 +18,9 @@
     "prisma": "^6.4.1",
     "turbo": "latest"
   },
+  "overrides": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
   "packageManager": "npm@10.2.4"
 }

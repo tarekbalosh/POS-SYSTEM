@@ -1,4 +1,5 @@
 import React from 'react';
+export const dynamic = 'force-dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, ShoppingBag, Users, TrendingUp } from 'lucide-react';
 // Note: Recharts needs a client component wrapper. I'll create a simple one.

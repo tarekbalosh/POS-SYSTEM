@@ -5,20 +5,20 @@ export declare class OrdersService {
     constructor(prisma: PrismaService);
     create(createOrderDto: CreateOrderDto, userId: string): Promise<{
         items: {
-            menuItemId: string;
-            quantity: number;
-            notes: string | null;
             id: string;
             status: import(".prisma/client").$Enums.OrderItemStatus;
+            menuItemId: string;
             orderId: string;
+            quantity: number;
             unitPrice: import("@prisma/client/runtime/library").Decimal;
             modifiers: import("@prisma/client/runtime/library").JsonValue | null;
+            notes: string | null;
         }[];
     } & {
-        tableId: string | null;
-        type: import(".prisma/client").$Enums.OrderType;
         id: string;
         status: import(".prisma/client").$Enums.OrderStatus;
+        tableId: string | null;
+        type: import(".prisma/client").$Enums.OrderType;
         subtotal: import("@prisma/client/runtime/library").Decimal;
         discount: import("@prisma/client/runtime/library").Decimal;
         tax: import("@prisma/client/runtime/library").Decimal;
@@ -28,14 +28,14 @@ export declare class OrdersService {
         createdById: string;
     }>;
     updateItemStatus(orderId: string, itemId: string, status: string): Promise<{
-        menuItemId: string;
-        quantity: number;
-        notes: string | null;
         id: string;
         status: import(".prisma/client").$Enums.OrderItemStatus;
+        menuItemId: string;
         orderId: string;
+        quantity: number;
         unitPrice: import("@prisma/client/runtime/library").Decimal;
         modifiers: import("@prisma/client/runtime/library").JsonValue | null;
+        notes: string | null;
     }>;
     private deductStock;
 }

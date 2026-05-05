@@ -18,12 +18,12 @@ async function main() {
 
   // 2. Create Owner User
   await prisma.tenantUser.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: 'owner@demo.com' } },
+    where: { tenantId_email: { tenantId: tenant.id, email: 'admin@resturant.com' } },
     update: {},
     create: {
       tenantId: tenant.id,
-      email: 'owner@demo.com',
-      passwordHash: 'hashed_password_here',
+      email: 'admin@resturant.com',
+      passwordHash: 'admin123',
       role: UserRole.OWNER,
     },
   });

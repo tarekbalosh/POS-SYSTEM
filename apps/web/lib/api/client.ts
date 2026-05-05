@@ -1,5 +1,4 @@
 import { getSession } from 'next-auth/react';
-import { cookies } from 'next/headers';
 
 export class ApiError extends Error {
   constructor(
@@ -30,8 +29,8 @@ class ApiClient {
     }
 
     const headers = new Headers(init?.headers);
-    if (session?.accessToken) {
-      headers.set('Authorization', `Bearer ${session.accessToken}`);
+    if ((session as any)?.accessToken) {
+      headers.set('Authorization', `Bearer ${(session as any).accessToken}`);
     }
     if (tenantId) {
       headers.set('x-tenant-id', tenantId);
