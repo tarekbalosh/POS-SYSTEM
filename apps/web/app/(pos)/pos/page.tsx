@@ -16,6 +16,7 @@ export default function POSPage() {
   const settings = useSettingsStore();
   const [isSyncing, setIsSyncing] = useState(false);
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -70,9 +71,11 @@ export default function POSPage() {
 
   if (!mounted) return null;
 
-  const filteredItems = activeCategory === 'ALL'
-    ? menuItems
-    : menuItems.filter(item => item.category === activeCategory);
+  const filteredItems = menuItems.filter(item => {
+    const matchesCategory = activeCategory === 'ALL' || item.category === activeCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -252,21 +255,36 @@ export default function POSPage() {
           </div>
         </header>
 
-        {/* Elegant Category Filter */}
-        <div className="px-6 md:px-10 py-6 md:py-8 bg-[#fafafa] shrink-0">
-          <div className="flex gap-3 md:gap-4 overflow-x-auto custom-scrollbar-hide pb-2">
-            {['ALL', 'BURGER', 'SHAWARMA', 'RICE', 'DRINK'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-6 md:px-8 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 uppercase ${activeCategory === cat
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200'
-                    : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 hover:text-slate-900 shadow-sm'
-                  }`}
-              >
-                {cat}
-              </button>
-            ))}
+        {/* Elegant Category Filter & Search */}
+        <div className="px-6 md:px-10 py-6 md:py-8 bg-[#fafafa] shrink-0 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex gap-3 md:gap-4 overflow-x-auto custom-scrollbar-hide pb-2 flex-1">
+              {['ALL', ...Array.from(new Set(menuItems.map((item) => item.category)))].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-6 md:px-8 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 uppercase ${activeCategory === cat
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200'
+                      : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 hover:text-slate-900 shadow-sm'
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            
+            {/* Search Input */}
+            <div className="relative w-full md:w-72 group">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
+                <Menu size={16} className="rotate-90" />
+              </div>
+              <input 
+                type="text"
+                placeholder="Search products..."
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-slate-100 rounded-2xl py-3.5 pl-12 pr-6 text-xs font-bold placeholder:text-slate-300 focus:outline-none focus:border-slate-300 focus:shadow-lg transition-all"
+              />
+            </div>
           </div>
         </div>
 
