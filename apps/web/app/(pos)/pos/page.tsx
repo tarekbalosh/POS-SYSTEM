@@ -202,7 +202,7 @@ export default function POSPage() {
           </div>
 
           {/* Center/Right: Unified Controls Container (Scrollable on Mobile) */}
-          <div className="w-full xl:w-auto overflow-x-auto custom-scrollbar-hide -mx-4 px-4 xl:mx-0 xl:px-0 py-1">
+          <div className="w-full xl:w-auto overflow-x-auto custom-scrollbar-hide -mx-4 px-4 xl:mx-0 xl:px-0 py-4">
             <div className="flex items-center gap-4 xl:gap-6 min-w-max">
 
               {/* Order Type Toggle */}
