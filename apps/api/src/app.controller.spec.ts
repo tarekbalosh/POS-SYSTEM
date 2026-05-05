@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return "ProPOS API is running"', () => {
+      expect(appController.getHello()).toBe('ProPOS API is running');
     });
   });
 });

@@ -15,19 +15,23 @@ export class LowStockNotificationWorker extends WorkerHost {
   async process(job: Job<any, any, string>): Promise<any> {
     if (job.name === 'low-stock-alert') {
       const { ingredientId, ingredientName, currentStock, unit } = job.data;
-      
+
       const tenantId = (job.asJSON().opts as any).tenantId; // Example of getting tenantId from job opts
 
       // 1. Emit Socket.io event to manager room
-      this.kitchenGateway.server.to(`tenant:${tenantId}:managers`).emit('inventory:low_stock', {
-        ingredientName,
-        currentStock,
-        unit,
-      });
+      this.kitchenGateway.server
+        .to(`tenant:${tenantId}:managers`)
+        .emit('inventory:low_stock', {
+          ingredientName,
+          currentStock,
+          unit,
+        });
 
       // 2. Log alert in DB (Simplified logic for the task)
-      console.log(`LOW STOCK ALERT: ${ingredientName} is at ${currentStock}${unit}`);
-      
+      console.log(
+        `LOW STOCK ALERT: ${ingredientName} is at ${currentStock}${unit}`,
+      );
+
       // 3. Integration with FCM or Email would go here
     }
   }

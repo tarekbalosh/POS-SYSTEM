@@ -31,15 +31,22 @@ export class TaxEngine {
     const breakdown = new Map<string, { name: string; amount: Decimal }>();
 
     for (const item of items) {
-      const rate = rates.find(r => r.id === item.taxRateId);
+      const rate = rates.find((r) => r.id === item.taxRateId);
       if (!rate) continue;
 
-      const { taxAmount } = this.calculateItemTax(item.unitPrice, item.quantity, rate);
-      
-      const existing = breakdown.get(rate.id) || { name: rate.name, amount: new Decimal(0) };
-      breakdown.set(rate.id, { 
-        name: rate.name, 
-        amount: existing.amount.plus(taxAmount) 
+      const { taxAmount } = this.calculateItemTax(
+        item.unitPrice,
+        item.quantity,
+        rate,
+      );
+
+      const existing = breakdown.get(rate.id) || {
+        name: rate.name,
+        amount: new Decimal(0),
+      };
+      breakdown.set(rate.id, {
+        name: rate.name,
+        amount: existing.amount.plus(taxAmount),
       });
     }
 

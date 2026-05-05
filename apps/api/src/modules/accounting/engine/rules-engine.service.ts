@@ -19,14 +19,18 @@ export interface AccountingRule {
 
 @Injectable()
 export class RulesEngine {
-  process(event: any, rules: AccountingRule[], mappings: Record<string, string>) {
+  process(
+    event: any,
+    rules: AccountingRule[],
+    mappings: Record<string, string>,
+  ) {
     const rule = this.findRule(event, rules);
     if (!rule) throw new Error(`No matching rule for event ${event.type}`);
 
-    const lines = rule.entryLines.map(line => ({
+    const lines = rule.entryLines.map((line) => ({
       accountCode: mappings[line.account_key] || line.account_key,
       side: line.side,
-      amount: this.evaluateFormula(line.formula, event)
+      amount: this.evaluateFormula(line.formula, event),
     }));
 
     this.validateBalanced(lines);
@@ -35,20 +39,25 @@ export class RulesEngine {
 
   private findRule(event: any, rules: AccountingRule[]) {
     return rules
-      .filter(r => r.isActive && r.triggerEvent === event.type)
-      .filter(r => this.evaluateConditions(r.conditions, event))
+      .filter((r) => r.isActive && r.triggerEvent === event.type)
+      .filter((r) => this.evaluateConditions(r.conditions, event))
       .sort((a, b) => b.priority - a.priority)[0];
   }
 
   private evaluateConditions(conditions: any[], event: any): boolean {
-    return conditions.every(c => {
+    return conditions.every((c) => {
       const actual = this.resolvePath(c.field, event);
       switch (c.op) {
-        case 'eq': return actual === c.value;
-        case 'gt': return Number(actual) > Number(c.value);
-        case 'lt': return Number(actual) < Number(c.value);
-        case 'in': return Array.isArray(c.value) && c.value.includes(actual);
-        default: return false;
+        case 'eq':
+          return actual === c.value;
+        case 'gt':
+          return Number(actual) > Number(c.value);
+        case 'lt':
+          return Number(actual) < Number(c.value);
+        case 'in':
+          return Array.isArray(c.value) && c.value.includes(actual);
+        default:
+          return false;
       }
     });
   }
@@ -66,10 +75,16 @@ export class RulesEngine {
   }
 
   private validateBalanced(lines: any[]) {
-    const totalDebit = lines.filter(l => l.side === 'DEBIT').reduce((s, l) => s.plus(l.amount), new Decimal(0));
-    const totalCredit = lines.filter(l => l.side === 'CREDIT').reduce((s, l) => s.plus(l.amount), new Decimal(0));
+    const totalDebit = lines
+      .filter((l) => l.side === 'DEBIT')
+      .reduce((s, l) => s.plus(l.amount), new Decimal(0));
+    const totalCredit = lines
+      .filter((l) => l.side === 'CREDIT')
+      .reduce((s, l) => s.plus(l.amount), new Decimal(0));
     if (!totalDebit.equals(totalCredit)) {
-      throw new Error(`Unbalanced entry: Dr ${totalDebit} vs Cr ${totalCredit}`);
+      throw new Error(
+        `Unbalanced entry: Dr ${totalDebit} vs Cr ${totalCredit}`,
+      );
     }
   }
 
@@ -85,7 +100,12 @@ export class RulesEngine {
       if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
         Object.assign(result, this.flattenEvent(val, newKey));
       } else {
-        result[newKey] = typeof val === 'object' ? val : (isNaN(Number(val)) ? val : Number(val));
+        result[newKey] =
+          typeof val === 'object'
+            ? val
+            : isNaN(Number(val))
+              ? val
+              : Number(val);
         // Also add simple keys for mathjs
         result[key] = result[newKey];
       }

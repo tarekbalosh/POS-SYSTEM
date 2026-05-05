@@ -11,10 +11,7 @@ describe('OrdersService', () => {
   beforeEach(async () => {
     prisma = mockDeep<PrismaService>();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        OrdersService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [OrdersService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<OrdersService>(OrdersService);
@@ -23,7 +20,7 @@ describe('OrdersService', () => {
   it('should create a PENDING order for dine-in', async () => {
     const dto = { type: 'DINE_IN', tableId: 'T1', items: [] };
     const mockOrder = orderFactory({ type: 'DINE_IN', status: 'PENDING' });
-    
+
     (prisma.client.order as any).create.mockResolvedValue(mockOrder);
 
     const result = await service.create(dto as any, 'user_1');
@@ -32,8 +29,10 @@ describe('OrdersService', () => {
   });
 
   it('should throw ConflictException if table is occupied', async () => {
-    (prisma.client.order as any).findFirst.mockResolvedValue({ id: 'existing' });
-    
+    (prisma.client.order as any).findFirst.mockResolvedValue({
+      id: 'existing',
+    });
+
     const dto = { type: 'DINE_IN', tableId: 'T1', items: [] };
     await expect(service.create(dto as any, 'user_1')).rejects.toThrow();
   });

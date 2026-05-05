@@ -13,11 +13,13 @@ export async function bootstrap() {
   app.enableCors();
 
   // Validation
-  app.useGlobalPipes(new ValidationPipe({ 
-    whitelist: true, 
-    transform: true,
-    forbidNonWhitelisted: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   // Global Filter
   app.useGlobalFilters(new GlobalExceptionFilter());
@@ -32,12 +34,12 @@ export async function bootstrap() {
     .addTag('orders')
     .addBearerAuth()
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
   const port = process.env.PORT || 4000;
-  
+
   if (process.env.NODE_ENV !== 'production') {
     await app.listen(port);
     console.log(`Application is running on: http://localhost:${port}`);
@@ -45,7 +47,7 @@ export async function bootstrap() {
   } else {
     await app.init();
   }
-  
+
   return app;
 }
 
@@ -53,4 +55,3 @@ export async function bootstrap() {
 if (process.env.NODE_ENV !== 'production') {
   bootstrap();
 }
-

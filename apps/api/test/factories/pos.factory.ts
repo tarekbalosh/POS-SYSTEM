@@ -16,7 +16,7 @@ export const orderFactory = (overrides = {}) => ({
 export const menuItemFactory = (overrides = {}) => ({
   id: 'item_1',
   name: 'Cheeseburger',
-  price: new Decimal(15.50),
+  price: new Decimal(15.5),
   isAvailable: true,
   categoryId: 'cat_1',
   ...overrides,

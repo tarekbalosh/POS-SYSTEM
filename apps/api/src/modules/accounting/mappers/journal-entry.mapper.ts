@@ -17,7 +17,7 @@ export class JournalEntryMapper {
       case 'ORDER_PAID':
         const { order, payment } = event.data;
         const methodKey = `${payment.method}_PAYMENT_DEBIT`;
-        
+
         // Dr Cash/Card/E-Wallet
         lines.push({
           accountCode: mappings[methodKey].code,

@@ -9,17 +9,21 @@ export class COGSEngine {
   async calculateOrderCOGS(orderId: string): Promise<Decimal> {
     const orderItems = await this.prisma.client.orderItem.findMany({
       where: { orderId },
-      include: { menuItem: { include: { ingredients: { include: { ingredient: true } } } } }
+      include: {
+        menuItem: {
+          include: { ingredients: { include: { ingredient: true } } },
+        },
+      },
     });
 
     let totalCOGS = new Decimal(0);
 
     for (const item of orderItems) {
       for (const recipeItem of item.menuItem.ingredients) {
-        const qtyUsed = new Decimal(recipeItem.quantityUsed as any);
-        const costPerUnit = new Decimal(recipeItem.ingredient.costPerUnit as any);
+        const qtyUsed = new Decimal(recipeItem.quantityUsed);
+        const costPerUnit = new Decimal(recipeItem.ingredient.costPerUnit);
         const itemCOGS = qtyUsed.mul(item.quantity).mul(costPerUnit);
-        
+
         totalCOGS = totalCOGS.add(itemCOGS);
       }
     }

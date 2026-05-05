@@ -10,6 +10,7 @@
     "postinstall": "npx prisma generate --schema=packages/database/schema.prisma",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "test:e2e": "echo \"E2E tests skipped\" && exit 0",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {

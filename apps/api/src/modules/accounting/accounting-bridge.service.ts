@@ -40,21 +40,21 @@ export class AccountingBridgeService {
           reference: entryData.reference,
           date: entryData.date,
           lines: {
-            create: entryData.lines.map(line => ({
+            create: entryData.lines.map((line) => ({
               accountCode: line.accountCode,
               accountName: line.accountName,
               debit: line.debit ? line.debit.toNumber() : null,
               credit: line.credit ? line.credit.toNumber() : null,
-            }))
-          }
-        }
+            })),
+          },
+        },
       });
 
       await tx.processedEvent.create({
         data: {
           eventId: event.id,
           journalEntryId: entry.id,
-        }
+        },
       });
 
       return entry;
@@ -62,11 +62,19 @@ export class AccountingBridgeService {
   }
 
   private validateBalance(lines: any[]) {
-    const totalDebit = lines.reduce((acc, l) => acc.plus(l.debit || 0), new Decimal(0));
-    const totalCredit = lines.reduce((acc, l) => acc.plus(l.credit || 0), new Decimal(0));
+    const totalDebit = lines.reduce(
+      (acc, l) => acc.plus(l.debit || 0),
+      new Decimal(0),
+    );
+    const totalCredit = lines.reduce(
+      (acc, l) => acc.plus(l.credit || 0),
+      new Decimal(0),
+    );
 
     if (!totalDebit.equals(totalCredit)) {
-      throw new BadRequestException(`Journal entry not balanced. Dr: ${totalDebit}, Cr: ${totalCredit}`);
+      throw new BadRequestException(
+        `Journal entry not balanced. Dr: ${totalDebit}, Cr: ${totalCredit}`,
+      );
     }
   }
 }

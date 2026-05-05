@@ -3,8 +3,14 @@ import { PrismaClient } from '@prisma/client';
 import { AsyncLocalStorage } from 'async_hooks';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  public static readonly als = new AsyncLocalStorage<{ schema: string; tenantId: string }>();
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  public static readonly als = new AsyncLocalStorage<{
+    schema: string;
+    tenantId: string;
+  }>();
 
   constructor() {
     super({
@@ -32,8 +38,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
             if (!store?.schema) return query(args);
 
             // Using a transaction to ensure SET search_path only affects the current query's connection
-            return (this as any).$transaction(async (tx: any) => {
-              await tx.$executeRawUnsafe(`SET search_path TO "${store.schema}", public`);
+            return this.$transaction(async (tx: any) => {
+              await tx.$executeRawUnsafe(
+                `SET search_path TO "${store.schema}", public`,
+              );
               return tx[model][operation](args);
             });
           },

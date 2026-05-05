@@ -17,19 +17,19 @@ describe('RulesEngine', () => {
     conditions: [{ field: 'payment.method', op: 'eq', value: 'CASH' }],
     entryLines: [
       { account_key: 'CASH', side: 'DEBIT', formula: 'payment.amount' },
-      { account_key: 'REVENUE', side: 'CREDIT', formula: 'order.total' }
-    ]
+      { account_key: 'REVENUE', side: 'CREDIT', formula: 'order.total' },
+    ],
   };
 
   it('should generate a balanced journal entry for cash sale', () => {
     const event = {
       type: 'ORDER_PAID',
       payment: { method: 'CASH', amount: 100 },
-      order: { total: 100 }
+      order: { total: 100 },
     };
-    
-    const mappings = { 'CASH': '1001', 'REVENUE': '4001' };
-    const result = engine.process(event, [mockRule as any], mappings);
+
+    const mappings = { CASH: '1001', REVENUE: '4001' };
+    const result = engine.process(event, [mockRule], mappings);
 
     expect(result.lines).toHaveLength(2);
     expect(result.lines[0].amount.toString()).toBe('100');
@@ -41,11 +41,13 @@ describe('RulesEngine', () => {
       ...mockRule,
       entryLines: [
         { account_key: 'CASH', side: 'DEBIT', formula: '100' },
-        { account_key: 'REVENUE', side: 'CREDIT', formula: '90' }
-      ]
+        { account_key: 'REVENUE', side: 'CREDIT', formula: '90' },
+      ],
     };
 
     const event = { type: 'ORDER_PAID' };
-    expect(() => engine.process(event, [badRule as any], {})).toThrow(/Unbalanced/);
+    expect(() => engine.process(event, [badRule as any], {})).toThrow(
+      /Unbalanced/,
+    );
   });
 });

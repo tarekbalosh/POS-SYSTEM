@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
@@ -23,21 +27,24 @@ export class OrdersService {
               quantity: item.quantity,
               unitPrice: item.price,
               notes: item.notes,
-            }))
-          }
+            })),
+          },
         },
-        include: { items: true }
+        include: { items: true },
       });
 
       // 2. Calculate totals
-      const subtotal = order.items.reduce((acc, item) => acc + (Number(item.unitPrice) * item.quantity), 0);
+      const subtotal = order.items.reduce(
+        (acc, item) => acc + Number(item.unitPrice) * item.quantity,
+        0,
+      );
       const tax = subtotal * 0.1; // 10% tax example
       const total = subtotal + tax;
 
       return tx.order.update({
         where: { id: order.id },
         data: { subtotal, tax, total },
-        include: { items: true }
+        include: { items: true },
       });
     });
   }
@@ -45,7 +52,7 @@ export class OrdersService {
   async updateItemStatus(orderId: string, itemId: string, status: string) {
     const item = await this.prisma.client.orderItem.findUnique({
       where: { id: itemId },
-      include: { menuItem: { include: { ingredients: true } } }
+      include: { menuItem: { include: { ingredients: true } } },
     });
 
     if (!item) throw new NotFoundException('Item not found');
@@ -57,35 +64,40 @@ export class OrdersService {
 
     return this.prisma.client.orderItem.update({
       where: { id: itemId },
-      data: { status: status as any }
+      data: { status: status as any },
     });
   }
 
   private async deductStock(menuItemId: string, quantity: number) {
     const recipe = await this.prisma.client.itemIngredient.findMany({
-      where: { menuItemId }
+      where: { menuItemId },
     });
 
     for (const ingredient of recipe) {
       const deduction = Number(ingredient.quantityUsed) * quantity;
-      
+
       await this.prisma.client.ingredient.update({
         where: { id: ingredient.ingredientId },
-        data: { 
+        data: {
           currentStock: { decrement: deduction },
           movements: {
             create: {
               type: 'SALE_DEDUCTION',
               quantity: deduction,
-              note: `Order deduction for menu item ${menuItemId}`
-            }
-          }
-        }
+              note: `Order deduction for menu item ${menuItemId}`,
+            },
+          },
+        },
       });
-      
+
       // Auto-disable menu item if ingredient < 1
-      const updated = await this.prisma.client.ingredient.findUnique({ where: { id: ingredient.ingredientId } });
-      if (updated && Number(updated.currentStock) < Number(updated.minThreshold)) {
+      const updated = await this.prisma.client.ingredient.findUnique({
+        where: { id: ingredient.ingredientId },
+      });
+      if (
+        updated &&
+        Number(updated.currentStock) < Number(updated.minThreshold)
+      ) {
         // Emit low stock alert (e.g. via Socket.io or Email)
       }
     }

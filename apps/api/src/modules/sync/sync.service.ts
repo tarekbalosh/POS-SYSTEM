@@ -14,7 +14,7 @@ export class SyncService {
       try {
         // Check for Idempotency: Has this local_id already been synced?
         const existingLog = await this.prisma.client.syncLog.findFirst({
-          where: { clientId, entityId: op.local_id.toString() }
+          where: { clientId, entityId: op.local_id.toString() },
         });
 
         if (existingLog) {
@@ -35,8 +35,8 @@ export class SyncService {
             entityId: op.local_id.toString(),
             action: op.action,
             payloadJson: op.payload,
-            syncedAt: new Date()
-          }
+            syncedAt: new Date(),
+          },
         });
 
         success.push(op.local_id);
@@ -58,15 +58,15 @@ export class SyncService {
 
   async processPull(since: string) {
     const lastSync = new Date(since);
-    
+
     // Fetch everything updated after lastSync
     const menuChanges = await this.prisma.client.menuItem.findMany({
-      where: { updatedAt: { gt: lastSync } }
+      where: { updatedAt: { gt: lastSync } },
     });
 
     return {
       changes: menuChanges,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

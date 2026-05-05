@@ -4,7 +4,10 @@ import axios from 'axios';
 
 @Injectable()
 export class WebhookDispatcher {
-  async dispatch(payload: any, config: { endpointUrl: string; secret: string }) {
+  async dispatch(
+    payload: any,
+    config: { endpointUrl: string; secret: string },
+  ) {
     const signature = this.generateSignature(payload, config.secret);
 
     try {
@@ -17,7 +20,10 @@ export class WebhookDispatcher {
       });
       return { success: true };
     } catch (error) {
-      console.error(`Webhook dispatch failed to ${config.endpointUrl}`, error.message);
+      console.error(
+        `Webhook dispatch failed to ${config.endpointUrl}`,
+        error.message,
+      );
       // In prod, this would trigger BullMQ retry logic
       throw error;
     }

@@ -26,8 +26,10 @@ export class StockDeductionService {
 
       if (!ingredient) continue;
 
-      const needed = new Decimal(recipeItem.quantityUsed).mul(orderItem.quantity);
-      const current = new Decimal(ingredient.currentStock as any);
+      const needed = new Decimal(recipeItem.quantityUsed).mul(
+        orderItem.quantity,
+      );
+      const current = new Decimal(ingredient.currentStock);
 
       if (current.lt(needed)) {
         throw new BadRequestException(`Out of stock: ${ingredient.name}`);
@@ -53,7 +55,7 @@ export class StockDeductionService {
       });
 
       // Check for Low Stock Alert
-      if (newStock.lte(new Decimal(ingredient.minThreshold as any))) {
+      if (newStock.lte(new Decimal(ingredient.minThreshold))) {
         await this.lowStockQueue.add('low-stock-alert', {
           ingredientId: ingredient.id,
           ingredientName: ingredient.name,
@@ -75,8 +77,8 @@ export class StockDeductionService {
       select: { menuItemId: true },
     });
 
-    const itemIds = items.map(i => i.menuItemId);
-    
+    const itemIds = items.map((i) => i.menuItemId);
+
     await this.prisma.client.menuItem.updateMany({
       where: { id: { in: itemIds } },
       data: { isAvailable: false },
@@ -91,7 +93,9 @@ export class StockDeductionService {
 
     for (const item of items) {
       for (const recipeItem of item.menuItem.ingredients) {
-        const quantityToReturn = new Decimal(recipeItem.quantityUsed).mul(item.quantity);
+        const quantityToReturn = new Decimal(recipeItem.quantityUsed).mul(
+          item.quantity,
+        );
 
         await this.prisma.client.stockMovement.create({
           data: {
