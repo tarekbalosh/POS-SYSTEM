@@ -6,8 +6,12 @@ import { bootstrap } from '../src/main';
 
 const server = express();
 
+let cachedApp: any;
+
 export default async (req: any, res: any) => {
-  const app = await bootstrap();
-  const instance = app.getHttpAdapter().getInstance();
+  if (!cachedApp) {
+    cachedApp = await bootstrap();
+  }
+  const instance = cachedApp.getHttpAdapter().getInstance();
   instance(req, res);
 };
