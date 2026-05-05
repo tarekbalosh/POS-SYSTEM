@@ -77,7 +77,7 @@ export default function POSPage() {
   const cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="flex h-screen bg-[#fafafa] text-slate-900 overflow-hidden font-sans flex-col md:flex-row">
+    <div className="flex h-[100dvh] bg-[#fafafa] text-slate-900 overflow-hidden font-sans flex-col md:flex-row">
       
       {/* Invoice Modal Overlay */}
       {showInvoice && lastOrder && (
@@ -254,7 +254,7 @@ export default function POSPage() {
         </header>
 
         {/* Elegant Category Filter */}
-        <div className="px-6 md:px-10 py-6 md:py-8 bg-[#fafafa]">
+        <div className="px-6 md:px-10 py-6 md:py-8 bg-[#fafafa] shrink-0">
           <div className="flex gap-3 md:gap-4 overflow-x-auto custom-scrollbar-hide pb-2">
             {['ALL', 'BURGER', 'SHAWARMA', 'RICE', 'DRINK'].map((cat) => (
               <button
@@ -273,7 +273,7 @@ export default function POSPage() {
         </div>
 
         {/* Refined Product Grid */}
-        <div className="flex-1 px-6 md:px-10 pb-10 overflow-y-auto grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 custom-scrollbar">
+        <div className="flex-1 px-6 md:px-10 pb-36 md:pb-10 overflow-y-auto grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 custom-scrollbar">
           {filteredItems.map((item) => (
             <div 
               key={item.id} 
