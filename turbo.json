@@ -3,7 +3,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
+      "outputs": [".next/**", "dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "DATABASE_URL_UNPOOLED",
+        "NEXT_PUBLIC_API_URL",
+        "AUTH_SECRET"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
