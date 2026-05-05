@@ -14,6 +14,7 @@ import { TenantsModule } from './modules/tenants/tenants.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { AccountingModule } from './modules/accounting/accounting.module';
 import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { KitchenGateway } from './modules/kitchen/kitchen.gateway';
     SyncModule,
     AccountingModule,
   ],
+  controllers: [AppController],
   providers: [PrismaService, RedisService, KitchenGateway],
 })
 export class AppModule implements NestModule {
