@@ -11,6 +11,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "apps/api/api/index.ts" }
+    { "source": "/api/(.*)", "destination": "/apps/api/api" },
+    { "source": "/(.*)", "destination": "/apps/web/$1" }
   ]
 }

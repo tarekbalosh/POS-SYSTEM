@@ -9,6 +9,7 @@ export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security
+  app.setGlobalPrefix('api');
   app.use(helmet());
   app.enableCors();
 
