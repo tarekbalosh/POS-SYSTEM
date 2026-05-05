@@ -180,7 +180,7 @@ export default function POSPage() {
       </aside>
 
       {/* Main Terminal Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#fafafa]">
+      <main className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#fafafa]">
         {/* Modern Header - Responsive & Premium */}
         <header className="border-b border-slate-100 bg-white shrink-0 py-4 px-4 md:px-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-5 xl:gap-0">
 
@@ -255,30 +255,41 @@ export default function POSPage() {
           </div>
         </header>
 
-        {/* Elegant Category Filter & Search */}
-        <div className="px-6 md:px-10 py-6 md:py-8 bg-[#fafafa] shrink-0 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex gap-3 md:gap-4 overflow-x-auto custom-scrollbar-hide pb-2 flex-1">
+        {/* Category Filter & Search */}
+        <div className="px-4 md:px-10 py-3 md:py-6 bg-[#fafafa] shrink-0">
+          {/* Search - mobile only top */}
+          <div className="relative mb-3 md:hidden">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-300">
+              <Menu size={14} className="rotate-90" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search products..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-100 rounded-xl py-3 pl-10 pr-4 text-xs font-bold placeholder:text-slate-300 focus:outline-none focus:border-slate-300 transition-all"
+            />
+          </div>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex gap-2 md:gap-4 overflow-x-auto custom-scrollbar-hide pb-1 flex-1">
               {['ALL', ...Array.from(new Set(menuItems.map((item) => item.category)))].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-6 md:px-8 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 uppercase ${activeCategory === cat
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200'
-                      : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 hover:text-slate-900 shadow-sm'
+                  className={`px-4 md:px-8 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black tracking-[0.15em] md:tracking-[0.2em] transition-all border whitespace-nowrap active:scale-95 uppercase ${activeCategory === cat
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                      : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 hover:text-slate-900'
                     }`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-            
-            {/* Search Input */}
-            <div className="relative w-full md:w-72 group">
+            {/* Search - desktop only */}
+            <div className="hidden md:block relative w-64 group">
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-900 transition-colors">
                 <Menu size={16} className="rotate-90" />
               </div>
-              <input 
+              <input
                 type="text"
                 placeholder="Search products..."
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -288,34 +299,36 @@ export default function POSPage() {
           </div>
         </div>
 
-        {/* Refined Product Grid */}
-        <div className="flex-1 px-6 md:px-10 pb-36 md:pb-10 overflow-y-auto grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 custom-scrollbar">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => {
-                addItem(item);
-                toast.success(`Added ${item.name}`, { duration: 1500 });
-              }}
-              className="group bg-white border border-slate-100 rounded-[2.5rem] p-4 hover:border-slate-300 hover:shadow-2xl transition-all duration-500 cursor-pointer active:scale-[0.98] flex flex-col gap-6 shadow-sm"
-            >
-              <div className="w-full aspect-[4/3] rounded-[2rem] overflow-hidden relative shadow-inner">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl text-xs font-black text-slate-900 border border-slate-100 shadow-xl">
-                  ${item.price.toFixed(2)}
+        {/* Refined Product Grid - scrollable container wraps the grid */}
+        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 px-4 md:px-10 pt-2 pb-36 md:pb-10">
+            {filteredItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  addItem(item);
+                  toast.success(`Added ${item.name}`, { duration: 1500 });
+                }}
+                className="group bg-white border border-slate-100 rounded-[2.5rem] p-4 hover:border-slate-300 hover:shadow-2xl transition-all duration-500 cursor-pointer active:scale-[0.98] flex flex-col gap-4 md:gap-6 shadow-sm"
+              >
+                <div className="w-full aspect-[4/3] rounded-[2rem] overflow-hidden relative shadow-inner">
+                  <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-black text-slate-900 border border-slate-100 shadow-xl">
+                    ${item.price.toFixed(2)}
+                  </div>
+                </div>
+                <div className="flex justify-between items-center px-1 pb-1">
+                  <div className="min-w-0">
+                    <h3 className="font-black text-slate-900 text-sm md:text-lg tracking-tight group-hover:text-slate-600 transition-colors truncate">{item.name}</h3>
+                    <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{item.category}</p>
+                  </div>
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center text-slate-300 transition-all flex-shrink-0 ml-2">
+                    <Plus size={18} strokeWidth={3} />
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center px-2 pb-2">
-                <div className="min-w-0">
-                  <h3 className="font-black text-slate-900 text-lg tracking-tight group-hover:text-slate-600 transition-colors">{item.name}</h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{item.category}</p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center text-slate-300 transition-all">
-                  <Plus size={20} strokeWidth={3} />
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </main>
 
