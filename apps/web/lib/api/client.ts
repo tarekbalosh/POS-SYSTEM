@@ -16,21 +16,14 @@ class ApiClient {
   private baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
-    // 1. Get Session for Token
-    const session = typeof window !== 'undefined' 
-      ? await getSession() 
-      : null; // For server actions, tokens are handled differently
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     
-    // 2. Get Tenant from Cookies (if on client)
-    let tenantId = '';
-    if (typeof window !== 'undefined') {
-      const match = document.cookie.match(new RegExp('(^| )x-tenant-id=([^;]+)'));
-      if (match) tenantId = match[2];
-    }
+    // 2. Get Tenant from localStorage
+    const tenantId = typeof window !== 'undefined' ? localStorage.getItem('tenant_id') : null;
 
     const headers = new Headers(init?.headers);
-    if ((session as any)?.accessToken) {
-      headers.set('Authorization', `Bearer ${(session as any).accessToken}`);
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
     }
     if (tenantId) {
       headers.set('x-tenant-id', tenantId);
